@@ -1,5 +1,5 @@
 const apiRouter = require('express').Router();
-const categoriesRouter = require('./categories.router');
+const categoriesRouter = require('./categories.router.js');
 
 apiRouter.use('/categories', categoriesRouter);
 
