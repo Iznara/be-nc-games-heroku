@@ -18,10 +18,11 @@ describe('GET /api/categories', () => {
                 expect(body.categories).toBeInstanceOf(Array);
                 expect(body.categories).toHaveLength(4);
                 body.categories.forEach((category) => {
-                    expect.objectContaining({
-                        slug: expect.any(String),
-                        description: expect.any(String)
-                    });
+                    expect(category).toEqual(
+                        expect.objectContaining({
+                            slug: expect.any(String),
+                            description: expect.any(String)
+                        }));
                 });
             });
     });
