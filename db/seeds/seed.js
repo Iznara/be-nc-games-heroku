@@ -4,10 +4,10 @@ const format = require('pg-format');
 const seed = async (data) => {
   const { categoryData, commentData, reviewData, userData } = data;
 
-  await db.query(`DROP TABLE IF EXISTS categories;`);
-  await db.query(`DROP TABLE IF EXISTS users;`);
-  await db.query(`DROP TABLE IF EXISTS reviews;`);
   await db.query(`DROP TABLE IF EXISTS comments;`);
+  await db.query(`DROP TABLE IF EXISTS reviews;`);
+  await db.query(`DROP TABLE IF EXISTS users;`);
+  await db.query(`DROP TABLE IF EXISTS categories;`);
 
   // 1. create tables
   await db.query(`
