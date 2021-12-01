@@ -19,8 +19,6 @@ describe('app handles all invalid urls', () => {
             });
     });
 
-
-
     describe('GET /api/categories', () => {
         test('status:200, responds with an array of \'categories\' objects', () => {
             return request(app)
@@ -40,10 +38,33 @@ describe('app handles all invalid urls', () => {
         });
     });
 
+    describe('GET /api/reviews/:review_id', () => {
+        test('status:200, responds with a single review by its review_id', () => {
+            return request(app)
+                .get('/api/reviews/2')
+                .expect(200)
+                .then(({ body }) => {
+                    expect(body.review).toEqual({
+                        review_id: 2,
+                        comment_count: 3,
+                        title: 'Jenga',
+                        designer: 'Leslie Scott',   
+                        owner: 'philippaclaire9',     
+                        review_img_url: 'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',                                                                 
+                        review_body: 'Fiddly fun for all the family',
+                        category: 'dexterity',
+                        created_at: '2021-01-18T10:01:41.251Z',                        
+                        votes: 5
+                    });
+                });
+        });
+    });
+
+
+
+//closing brackets for 404 error test
 });
 
-
-// GET /api/reviews/:review_id
 // PATCH /api/reviews/:review_id
 // GET /api/reviews
 // GET /api/reviews/:review_id/comments
