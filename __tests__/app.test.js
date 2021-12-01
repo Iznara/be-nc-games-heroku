@@ -129,6 +129,7 @@ describe('PATCH /api/reviews/:review_id', () => {
                     expect(body.msg).toBe('Bad Request');
                 });
         });
+        //Possibly status:422 unprocessable entity
         test(`status:400 bad request - invalid data in request body`, () => {
             return request(app)
                 .patch(`/api/reviews/2`)
