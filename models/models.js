@@ -22,6 +22,7 @@ exports.updateReview = async (id, vote) => {
     UPDATE reviews SET votes = votes + $2 
     WHERE review_id = $1 RETURNING *`
     const review = await db.query(queryStr, [id, vote]);
-    return review.rows[0];
+    return vote !== undefined ?
+        review.rows[0] : Promise.reject({ status: '400', msg: 'Bad Request' })
 };
 
