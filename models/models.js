@@ -16,3 +16,12 @@ exports.selectReviewById = async (id) => {
     const { rows } = await db.query(queryStr, [id])
     return rows[0];
 };
+
+exports.updateReview = async (id, vote) => {
+    const queryStr = `
+    UPDATE reviews SET votes = votes + $2 
+    WHERE review_id = $1 RETURNING *`
+    const review = await db.query(queryStr, [id, vote]);
+    return review.rows[0];
+};
+
