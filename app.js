@@ -7,7 +7,7 @@ app.use(express.json());
 
 app.use('/api', apiRouter);
 
-app.use(handle404Errors)
+app.use(handle404Errors);
 app.use(handleCustomErrors);
 app.use(handlePsqlErrors);
 app.use(handleServerErrors);

@@ -1,5 +1,5 @@
 exports.handle404Errors = (req, res) => {
-    res.status(404).send({ msg: 'Route not found' })
+    res.status(404).send({ msg: 'Route Not Found' })
 };
 
 exports.handleCustomErrors = (err, req, res, next) => {
@@ -9,8 +9,8 @@ exports.handleCustomErrors = (err, req, res, next) => {
 };
 
 exports.handlePsqlErrors = (err, req, res, next) => {
-    if (err.code) {
-        res.status(400).send({ msg: 'Invalid input' });
+    if (err.code === '22P02') {
+        res.status(400).send({ msg: 'Bad Request' });
     } else next(err);
 };
 

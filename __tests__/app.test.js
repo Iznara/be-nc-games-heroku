@@ -10,12 +10,12 @@ afterAll(() => db.end());
 
 
 describe('app handles all invalid urls', () => {
-    test('status:404 invalid route', () => {
+    test('status:404 - not found', () => {
         return request(app)
             .get('/vdfvdfv/svfvdfv')
             .expect(404)
             .then(({ body }) => {
-                expect(body.msg).toBe('Route not found');
+                expect(body.msg).toBe('Route Not Found');
             });
     });
 
@@ -48,21 +48,28 @@ describe('app handles all invalid urls', () => {
                         review_id: 2,
                         comment_count: 3,
                         title: 'Jenga',
-                        designer: 'Leslie Scott',   
-                        owner: 'philippaclaire9',     
-                        review_img_url: 'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',                                                                 
+                        designer: 'Leslie Scott',
+                        owner: 'philippaclaire9',
+                        review_img_url: 'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
                         review_body: 'Fiddly fun for all the family',
                         category: 'dexterity',
-                        created_at: '2021-01-18T10:01:41.251Z',                        
+                        created_at: '2021-01-18T10:01:41.251Z',
                         votes: 5
                     });
                 });
         });
     });
 
+    test('status:400 bad request - invalid syntax for :review_id', () => {
+        return request(app)
+            .get('/api/reviews/notanumber!')
+            .expect(400)
+            .then(({ body }) => {
+                expect(body.msg).toBe('Bad Request')
+            });
+    });
 
-
-//closing brackets for 404 error test
+    //closing brackets for 404 error test
 });
 
 // PATCH /api/reviews/:review_id
