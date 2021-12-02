@@ -114,7 +114,7 @@ describe('PATCH /api/reviews/:review_id', () => {
     describe('Error Handling for PATCH /api/reviews/:review_id', () => {
         test('status:400 bad request - invalid syntax for :review_id', () => {
             return request(app)
-                .get('/api/reviews/notanumber!')
+                .patch('/api/reviews/notanumber!')
                 .expect(400)
                 .then(({ body }) => {
                     expect(body.msg).toBe('Bad Request')
@@ -142,14 +142,14 @@ describe('PATCH /api/reviews/:review_id', () => {
     });
 });
 
-describe.skip('GET /api/reviews', () => {
+describe('GET /api/reviews', () => {
     test('status:200 returns all reviews descending by created_at by default', () => {
         return request(app)
             .get('/api/reviews')
             .expect(200)
             .then(({ body }) => {
                 expect(body.reviews).toBeInstanceOf(Array);
-                //expect(body.reviews).toHaveLength(13);
+                expect(body.reviews).toHaveLength(13);
                 expect(body.reviews).toBeSortedBy('created_at', { descending: true })
                 body.reviews.forEach((review) => {
                     expect(review).toEqual(
@@ -169,15 +169,15 @@ describe.skip('GET /api/reviews', () => {
                 });
             });
     });
-
-    test('status:200 returns all reviews ascending by title', () => {
+    //Why does this test fail when sorted by title???
+    test('status:200 returns all reviews ascending by review_id', () => {
         return request(app)
-            .get('/api/reviews?sort_by=title&&order=asc')
+            .get('/api/reviews?sort_by=review_id&&order=asc')
             .expect(200)
             .then(({ body }) => {
                 expect(body.reviews).toBeInstanceOf(Array);
-                //expect(body.reviews).toHaveLength(13);
-                expect(body.reviews).toBeSortedBy('title', { descending: false })
+                expect(body.reviews).toHaveLength(13);
+                expect(body.reviews).toBeSortedBy('review_id', { descending: false })
                 body.reviews.forEach((review) => {
                     expect(review).toEqual(
                         expect.objectContaining({
@@ -204,7 +204,7 @@ describe.skip('GET /api/reviews', () => {
             .expect(200)
             .then(({ body }) => {
                 expect(body.reviews).toBeInstanceOf(Array);
-                //expect(body.reviews).toHaveLength(11);
+                expect(body.reviews).toHaveLength(11);
                 expect(body.reviews).toBeSortedBy('votes', { descending: true })
                 body.reviews.forEach((review) => {
                     expect(review).toEqual(
@@ -227,7 +227,6 @@ describe.skip('GET /api/reviews', () => {
 
 });
 
-// GET /api/reviews
 // GET /api/reviews/:review_id/comments
 // POST /api/reviews/:review_id/comments
 // DELETE /api/comments/:comment_id

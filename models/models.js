@@ -26,4 +26,20 @@ exports.updateReview = async (id, vote) => {
         review.rows[0] : Promise.reject({ status: '400', msg: 'Bad Request' })
 };
 
-// exports.selectReviews = async
+exports.selectReviews = async (sort = 'created_at', order = 'desc', category) => {
+    const queryArr = [];
+    let queryStr = `
+    SELECT reviews.*,
+    COUNT(comments.review_id)::INT AS comment_count, 
+    COUNT(*) OVER()::INT AS total_count 
+    FROM reviews 
+    LEFT JOIN comments ON reviews.review_id = comments.review_id `
+    if (category) {
+        queryStr += `WHERE category = $1 `;
+        queryArr.push(category)
+    }
+    queryStr += `GROUP BY reviews.review_id `
+    queryStr += `ORDER BY ${sort} ${order} `
+    const { rows } = await db.query(queryStr, queryArr)
+    return rows;
+}

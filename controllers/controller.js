@@ -22,9 +22,20 @@ exports.patchReview = (req, res, next) => {
 };
 
 // exports.getReviews = (req, res, next) => {
-//     const { sort_by, order, category } = req.query;
-//     selectReviews(sort_by, order, category).then(reviews => {
+//     selectReviews().then(reviews => {
 //         res.status(200).send({ reviews: reviews });
-//     }).catch(next);
-
+//     })
+//     .catch(next)
 // };
+
+exports.getReviews = (req, res, next) => {
+    const { sort_by, order, category } = req.query;
+    const queries = ['sort_by', 'order', 'category'];
+    const keys = Object.keys(req.query);
+
+    if (keys.every(key => queries.includes(key))) {
+        selectReviews(sort_by, order, category).then(reviews => {
+            res.status(200).send({ reviews: reviews });
+        }).catch(next);
+    };
+};

@@ -2,8 +2,8 @@ const { getReviewById, patchReview, getReviews } = require('../controllers/contr
 
 const reviewsRouter = require('express').Router();
 
-// reviewsRouter.route('/')
-// .get(getReviews);
+reviewsRouter.route('/')
+.get(getReviews);
 
 reviewsRouter.route('/:review_id')
 .get(getReviewById)
