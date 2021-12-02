@@ -26,3 +26,4 @@ exports.updateReview = async (id, vote) => {
         review.rows[0] : Promise.reject({ status: '400', msg: 'Bad Request' })
 };
 
+// exports.selectReviews = async

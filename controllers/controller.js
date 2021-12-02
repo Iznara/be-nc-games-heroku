@@ -1,18 +1,16 @@
-const { selectCategories, selectReviewById, updateReview } = require("../models/models.js");
+const { selectCategories, selectReviewById, updateReview, selectReviews } = require("../models/models.js");
 
 exports.getCategories = (req, res, next) => {
-    selectCategories().then(categories => {      
+    selectCategories().then(categories => {
         res.status(200).send({ categories: categories });
-    })
-    .catch(next)
+    }).catch(next)
 };
 
 exports.getReviewById = (req, res, next) => {
     const { review_id } = req.params;
     selectReviewById(review_id).then(review => {
         res.status(200).send({ review: review });
-    })
-    .catch(next)
+    }).catch(next)
 };
 
 exports.patchReview = (req, res, next) => {
@@ -20,6 +18,13 @@ exports.patchReview = (req, res, next) => {
     const { inc_votes } = req.body;
     updateReview(review_id, inc_votes).then(review => {
         res.status(200).send({ review: review });
-    })
-    .catch(next)
+    }).catch(next)
 };
+
+// exports.getReviews = (req, res, next) => {
+//     const { sort_by, order, category } = req.query;
+//     selectReviews(sort_by, order, category).then(reviews => {
+//         res.status(200).send({ reviews: reviews });
+//     }).catch(next);
+
+// };
