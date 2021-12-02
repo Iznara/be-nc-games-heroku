@@ -170,6 +170,7 @@ describe('GET /api/reviews', () => {
             });
     });
     //Why does this test fail when sorted by title???
+    //Works when queried on heroku but fails jest test
     test('status:200 returns all reviews ascending by review_id', () => {
         return request(app)
             .get('/api/reviews?sort_by=review_id&&order=asc')
@@ -197,7 +198,7 @@ describe('GET /api/reviews', () => {
             });
 
     });
-
+    //not working when queried on heroku - returns empty reviews array
     test('status:200 returns reviews filtered by social_deduction category and descending by votes', () => {
         return request(app)
             .get('/api/reviews?category=social+deduction&&sort_by=votes&&order=desc')
@@ -225,6 +226,53 @@ describe('GET /api/reviews', () => {
             });
     });
 
+    describe('Error Handling for GET /api/reviews', () => {
+        test("status:400 invalid query", () => {
+            return request(app)
+                .get("/api/reviews?eroifjier")
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Invalid Query');
+                });
+        });
+
+        test("status:400 invalid sort_by query", () => {
+            return request(app)
+                .get("/api/reviews?sort_by=bananas")
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Bad Request: Invalid column name');
+                });
+        });
+
+        test("status:400 invalid order query", () => {
+            return request(app)
+                .get("/api/reviews?sort_by=votes&&order=condescending")
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Bad Request: Order should be \'asc\' or \'desc\' ');
+                });
+        });
+
+        test("status:404 invalid category - does not exist in database", () => {
+            return request(app)
+                .get("/api/reviews?category=notavalidcat")
+                .expect(404)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Category does not exist in the database');
+                    //supply msg with list of valid categories?
+                });
+        });
+
+        test("status:404 valid category but no reviews have been written", () => {
+            return request(app)
+                .get("/api/reviews?category=children's+games")
+                .expect(404)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('No reviews found for this category');
+                });
+        });
+    });
 });
 
 // GET /api/reviews/:review_id/comments
