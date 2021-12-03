@@ -250,7 +250,7 @@ describe('GET /api/reviews', () => {
                 .get("/api/reviews?sort_by=votes&&order=condescending")
                 .expect(400)
                 .then(({ body }) => {
-                    expect(body.msg).toBe('Bad Request: Order should be \'asc\' or \'desc\' ');
+                    expect(body.msg).toBe('Bad Request: Order should be \'asc\' or \'desc\'');
                 });
         });
 
