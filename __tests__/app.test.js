@@ -275,7 +275,40 @@ describe('GET /api/reviews', () => {
     });
 });
 
-// GET /api/reviews/:review_id/comments
+
+describe('GET /api/reviews/:review_id/comments', () => {
+    test('status:200 returns an array of comments for the given review_id', () => {
+        return request(app)
+            .get('/api/reviews/2/comments')
+            .expect(200)
+            .then(({ body }) => {
+                expect(body.comments).toEqual([
+                    {
+                        body: 'I loved this game too!',
+                        votes: 16,
+                        author: 'bainesface',
+                        comment_id: 2,
+                        created_at: new Date(1511354613389),
+                      },
+                      {
+                        body: 'EPIC board game!',
+                        votes: 16,
+                        author: 'bainesface',
+                        comment_id: 2,
+                        created_at: new Date(1511354163389),
+                      },
+                      {
+                        body: 'Now this is a story all about how, board games turned my life upside down',
+                        votes: 13,
+                        author: 'mallionaire',
+                        comment_id: 2,
+                        created_at: new Date(1610965445410),
+                      },
+                ])
+            });
+    });
+});
+
 // POST /api/reviews/:review_id/comments
 // DELETE /api/comments/:comment_id
 // GET /api
