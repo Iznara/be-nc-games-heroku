@@ -51,3 +51,10 @@ exports.selectReviews = async (sort = 'created_at', order = 'desc', category) =>
         return rows;
     }
 }
+
+exports.selectCommentsByReviewId = async (id) => {
+    const queryStr = `
+    SELECT * FROM comments WHERE review_id = $1;`
+    const { rows } = await db.query(queryStr, [id])
+    return rows;
+};

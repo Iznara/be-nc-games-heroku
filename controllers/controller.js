@@ -1,4 +1,4 @@
-const { selectCategories, selectReviewById, updateReview, selectReviews } = require("../models/models.js");
+const { selectCategories, selectReviewById, updateReview, selectReviews, selectCommentsByReviewId } = require("../models/models.js");
 
 exports.getCategories = (req, res, next) => {
     selectCategories().then(categories => {
@@ -32,4 +32,11 @@ exports.getReviews = (req, res, next) => {
         }).catch(next)
         : Promise.reject({ status: '400', msg: 'Invalid Query' }).catch(next);
 
+};
+
+exports.getCommentsByReviewId = (req, res, next) => {
+    const { review_id } = req.params;
+    selectCommentsByReviewId(review_id).then(comments => {
+        res.status(200).send({ comments: comments });
+    }).catch(next)
 };
