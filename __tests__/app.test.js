@@ -309,7 +309,29 @@ describe('GET /api/reviews/:review_id/comments', () => {
                 ]);
             });
     });
+    describe('Error Handling for GET /api/reviews/:review_id/comments', () => {
+
+        test('status:400 bad request - invalid syntax for :review_id', () => {
+            return request(app)
+                .get('/api/reviews/banana/comments')
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Bad Request')
+                });
+        });
+
+        test('status:404 not found - review_id is valid but not comment has yet been written', () => {
+            return request(app)
+                .get('/api/reviews/1/comments')
+                .expect(404)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('No comments found for this review')
+                });
+        });
+    });
 });
+
+
 
 // POST /api/reviews/:review_id/comments
 // DELETE /api/comments/:comment_id

@@ -56,5 +56,8 @@ exports.selectCommentsByReviewId = async (id) => {
     const queryStr = `
     SELECT * FROM comments WHERE review_id = $1;`
     const { rows } = await db.query(queryStr, [id])
-    return rows;
+    
+    return rows.length !== 0 ?
+    rows : Promise.reject({ status: '404', msg: 'No comments found for this review' })
+    
 };
