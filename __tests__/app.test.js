@@ -224,6 +224,7 @@ describe('GET /api/reviews', () => {
                         }));
                 });
             });
+
     });
 
     describe('Error Handling for GET /api/reviews', () => {
@@ -289,23 +290,23 @@ describe('GET /api/reviews/:review_id/comments', () => {
                         comment_id: 1,
                         created_at: '2017-11-22T12:43:33.389Z',
                         review_id: 2,
-                      },
-                      {
+                    },
+                    {
                         body: 'EPIC board game!',
                         votes: 16,
                         author: 'bainesface',
                         comment_id: 4,
                         created_at: '2017-11-22T12:36:03.389Z',
                         review_id: 2,
-                      },
-                      {
+                    },
+                    {
                         body: 'Now this is a story all about how, board games turned my life upside down',
                         votes: 13,
                         author: 'mallionaire',
                         comment_id: 5,
                         created_at: '2021-01-18T10:24:05.410Z',
                         review_id: 2,
-                      },
+                    },
                 ]);
             });
     });
@@ -331,7 +332,29 @@ describe('GET /api/reviews/:review_id/comments', () => {
     });
 });
 
+describe('POST /api/reviews/:review_id/comments', () => {
+    test('status:201 returns the posted comment', () => {
+        return request(app)
+            .post('/api/reviews/1/comments')
+            .send({ "username": "bainesface", "body": "I like turtles" })
+            .expect(201)
+            .then(({ body }) => {
+                expect(body.comment).toMatchObject({
+                    body: 'I like turtles',
+                    votes: 0,
+                    author: 'bainesface',
+                    review_id: expect.any(Number),
+                    created_at: expect.any(String)
+                })
+            })
+    });
 
+    describe('Error Handling for POST /api/reviews/:review_id/comments', () => {
+        //invalid review_id 
+        //user does not exist - invalid username
+        //empty request body
+    });
+});
 
 // POST /api/reviews/:review_id/comments
 // DELETE /api/comments/:comment_id
