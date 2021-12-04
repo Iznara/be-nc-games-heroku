@@ -1,4 +1,5 @@
 const db = require('../db/connection.js');
+const fs = require("fs/promises");
 
 exports.selectCategories = async () => {
     const { rows } = await db.query(`SELECT * FROM categories;`)
@@ -78,4 +79,9 @@ exports.removeComment = async (id) => {
     DELETE FROM comments WHERE comment_id = $1 RETURNING *;`
     const { rows } = await db.query(queryStr, [id])
     return rows;
+};
+
+exports.readSummary = async () => {
+    const overview = await fs.readFile('./db/data/endpoints.json', 'utf8')
+    return JSON.parse(overview);
 };

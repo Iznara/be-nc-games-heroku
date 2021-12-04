@@ -1,4 +1,4 @@
-const { selectCategories, selectReviewById, updateReview, selectReviews, selectCommentsByReviewId, insertComment, removeComment } = require("../models/models.js");
+const { selectCategories, selectReviewById, updateReview, selectReviews, selectCommentsByReviewId, insertComment, removeComment, readSummary } = require("../models/models.js");
 
 exports.getCategories = (req, res, next) => {
     selectCategories().then(categories => {
@@ -52,4 +52,10 @@ exports.deleteComment = (req, res, next) => {
     removeComment(comment_id).then(() => {
         res.status(204).send();
     }).catch(next)
-}
+};
+
+exports.getSummary = (req, res, next) => {
+    readSummary().then(summary => {
+        res.status(200).send({ summary : summary })
+    }).catch(next)
+};
