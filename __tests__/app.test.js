@@ -435,12 +435,18 @@ describe('DELETE /api/comments/:comment_id', () => {
             ]);
         });
     });
-
     describe('Error Handling for DELETE /api/comments/:comment_id', () => {
+        test('status:400 invalid syntax for comment_id', () => {
+            return request(app)
+                .delete('/api/comments/notanumber')
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Bad Request')
+                });
+        });
     });
 });
 
-// DELETE /api/comments/:comment_id
 // GET /api
 
 // 200 OK
