@@ -59,3 +59,13 @@ exports.selectCommentsByReviewId = async (id) => {
     return rows.length !== 0 ?
         rows : Promise.reject({ status: '404', msg: 'No comments found for this review' })
 };
+
+exports.insertComment = async (id, user, body) => {
+    const queryStr = `
+    INSERT INTO comments 
+    (body, author, review_id)
+    VALUES ($1, $2, $3)
+    RETURNING *;`
+    const { rows } = await db.query(queryStr, [body, user, id])
+    return rows[0];
+};
