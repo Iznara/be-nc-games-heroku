@@ -382,7 +382,59 @@ describe('POST /api/reviews/:review_id/comments', () => {
     });
 });
 
-// POST /api/reviews/:review_id/comments
+describe('DELETE /api/comments/:comment_id', () => {
+    test('status:204 returns with correct status and no content', () => {
+        return request(app)
+        .delete('/api/comments/3')
+        .expect(204)
+        .then(()=> {
+            return db.query('SELECT * FROM comments')
+        }).then(({rows}) => {
+            expect(rows.length).toBe(5)
+            expect(rows).toEqual([
+            {
+                body: 'I loved this game too!',
+                votes: 16,
+                author: 'bainesface',
+                review_id: 2,
+                created_at: new Date(1511354613389),
+              },
+              {
+                body: 'My dog loved this game too!',
+                votes: 13,
+                author: 'mallionaire',
+                review_id: 3,
+                created_at: new Date(1610964545410),
+              },
+              {
+                body: 'EPIC board game!',
+                votes: 16,
+                author: 'bainesface',
+                review_id: 2,
+                created_at: new Date(1511354163389),
+              },
+              {
+                body: 'Now this is a story all about how, board games turned my life upside down',
+                votes: 13,
+                author: 'mallionaire',
+                review_id: 2,
+                created_at: new Date(1610965445410),
+              },
+              {
+                body: 'Not sure about dogs, but my cat likes to get involved with board games, the boxes are their particular favourite',
+                votes: 10,
+                author: 'philippaclaire9',
+                review_id: 3,
+                created_at: new Date(1616874588110),
+              }
+            ]);
+        });
+    });
+
+    describe('Error Handling for DELETE /api/comments/:comment_id', () => {
+    });
+});
+
 // DELETE /api/comments/:comment_id
 // GET /api
 
