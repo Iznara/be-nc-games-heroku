@@ -13,8 +13,12 @@ exports.handlePsqlErrors = (err, req, res, next) => {
         res.status(400).send({ msg: 'Bad Request' });
     } else if (err.code === '42601') {
         res.status(400).send({ msg: 'Bad Request: Order should be \'asc\' or \'desc\'' })
-    }else if (err.code === '42703') {
+    } else if (err.code === '42703') {
         res.status(400).send({ msg: 'Bad Request: Invalid column name' });
+    } else if (err.code === '23503') {
+        res.status(400).send({ msg: 'Bad Request: Username does not exist' });
+    } else if (err.code === '23502') {
+        res.status(400).send({ msg: 'Bad Request: NULL values not authorised' });
     }
     else next(err);
 };

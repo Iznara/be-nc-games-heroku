@@ -350,9 +350,35 @@ describe('POST /api/reviews/:review_id/comments', () => {
     });
 
     describe('Error Handling for POST /api/reviews/:review_id/comments', () => {
-        //invalid review_id 
-        //user does not exist - invalid username
-        //empty request body
+        test('status:400 bad request - invalid syntax for :review_id', () => {
+            return request(app)
+                .get('/api/reviews/notanumber/comments')
+                .send({ "username": "bainesface", "body": "I like turtles" })
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Bad Request')
+                });
+        });
+
+        test('status:400 bad request - username does not exist', () => {
+            return request(app)
+                .post('/api/reviews/1/comments')
+                .send({ "username": "ryan", "body": "I also like turtles!" })
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Bad Request: Username does not exist')
+                });
+        });
+
+        test('status:400 bad request - empty request body', () => {
+            return request(app)
+                .post('/api/reviews/1/comments')
+                .send({})
+                .expect(400)
+                .then(({ body }) => {
+                    expect(body.msg).toBe('Bad Request: NULL values not authorised')
+                });
+        });
     });
 });
 

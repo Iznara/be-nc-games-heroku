@@ -22,8 +22,9 @@ exports.updateReview = async (id, vote) => {
     UPDATE reviews SET votes = votes + $2 
     WHERE review_id = $1 RETURNING *`
     const review = await db.query(queryStr, [id, vote]);
-    return vote !== undefined ?
-        review.rows[0] : Promise.reject({ status: '400', msg: 'Bad Request' })
+    return vote === undefined ?
+        Promise.reject({ status: '400', msg: 'Bad Request' })
+        : review.rows[0]
 };
 
 exports.selectReviews = async (sort = 'created_at', order = 'desc', category) => {
@@ -67,5 +68,7 @@ exports.insertComment = async (id, user, body) => {
     VALUES ($1, $2, $3)
     RETURNING *;`
     const { rows } = await db.query(queryStr, [body, user, id])
-    return rows[0];
+    return user === undefined || body === undefined ?
+        Promise.reject({ status: '400', msg: 'Bad Request' })
+        : rows[0];
 };
