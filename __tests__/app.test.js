@@ -398,6 +398,7 @@ describe('DELETE /api/comments/:comment_id', () => {
                 author: 'bainesface',
                 review_id: 2,
                 created_at: new Date(1511354613389),
+                comment_id: 1
               },
               {
                 body: 'My dog loved this game too!',
@@ -405,6 +406,7 @@ describe('DELETE /api/comments/:comment_id', () => {
                 author: 'mallionaire',
                 review_id: 3,
                 created_at: new Date(1610964545410),
+                comment_id: 2
               },
               {
                 body: 'EPIC board game!',
@@ -412,6 +414,7 @@ describe('DELETE /api/comments/:comment_id', () => {
                 author: 'bainesface',
                 review_id: 2,
                 created_at: new Date(1511354163389),
+                comment_id: 4
               },
               {
                 body: 'Now this is a story all about how, board games turned my life upside down',
@@ -419,6 +422,7 @@ describe('DELETE /api/comments/:comment_id', () => {
                 author: 'mallionaire',
                 review_id: 2,
                 created_at: new Date(1610965445410),
+                comment_id: 5
               },
               {
                 body: 'Not sure about dogs, but my cat likes to get involved with board games, the boxes are their particular favourite',
@@ -426,6 +430,7 @@ describe('DELETE /api/comments/:comment_id', () => {
                 author: 'philippaclaire9',
                 review_id: 3,
                 created_at: new Date(1616874588110),
+                comment_id: 6
               }
             ]);
         });

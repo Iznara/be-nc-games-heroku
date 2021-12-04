@@ -72,3 +72,10 @@ exports.insertComment = async (id, user, body) => {
         Promise.reject({ status: '400', msg: 'Bad Request' })
         : rows[0];
 };
+
+exports.removeComment = async (id) => {
+    const queryStr = `
+    DELETE FROM comments WHERE comment_id = $1 RETURNING *;`
+    const { rows } = await db.query(queryStr, [id])
+    return rows;
+};
