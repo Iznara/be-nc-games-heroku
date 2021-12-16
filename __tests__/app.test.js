@@ -98,7 +98,6 @@ describe('PATCH /api/reviews/:review_id', () => {
             votes: -95
         });
     });
-
     describe('Error Handling for PATCH /api/reviews/:review_id', () => {
         test('status:400 bad request - invalid syntax for :review_id', async () => {
             const { body } = await request(app)
@@ -113,7 +112,6 @@ describe('PATCH /api/reviews/:review_id', () => {
                 .expect(400);
             expect(body.msg).toBe('Bad Request');
         });
-        //Possibly status:422 unprocessable entity
         test(`status:400 bad request - invalid data in request body`, async () => {
             const { body } = await request(app)
                 .patch(`/api/reviews/2`)
@@ -149,8 +147,6 @@ describe('GET /api/reviews', () => {
                 }));
         });
     });
-    //Why does this test fail when sorted by title???
-    //Works when queried on heroku but fails jest test
     test('status:200 returns all reviews ascending by review_id', async () => {
         const { body } = await request(app)
             .get('/api/reviews?sort_by=review_id&&order=asc')
@@ -176,7 +172,6 @@ describe('GET /api/reviews', () => {
         });
 
     });
-    //not working when queried on heroku - returns empty reviews array
     test('status:200 returns reviews filtered by social_deduction category and descending by votes', async () => {
         const { body } = await request(app)
             .get('/api/reviews?category=social+deduction&&sort_by=votes&&order=desc')
@@ -200,9 +195,7 @@ describe('GET /api/reviews', () => {
                     comment_count: expect.any(Number),
                 }));
         });
-
     });
-
     describe('Error Handling for GET /api/reviews', () => {
         test("status:400 invalid query", async () => {
             const { body } = await request(app)
@@ -210,28 +203,24 @@ describe('GET /api/reviews', () => {
                 .expect(400);
             expect(body.msg).toBe('Invalid Query');
         });
-
         test("status:400 invalid sort_by query", async () => {
             const { body } = await request(app)
                 .get("/api/reviews?sort_by=bananas")
                 .expect(400);
             expect(body.msg).toBe('Bad Request: Invalid column name');
         });
-
         test("status:400 invalid order query", async () => {
             const { body } = await request(app)
                 .get("/api/reviews?sort_by=votes&&order=condescending")
                 .expect(400);
             expect(body.msg).toBe('Bad Request: Order should be \'asc\' or \'desc\'');
         });
-
         test("status:404 invalid category - does not exist in database", async () => {
             const { body } = await request(app)
                 .get("/api/reviews?category=notavalidcat")
                 .expect(404);
             expect(body.msg).toBe('Category does not exist in the database');
         });
-
         test("status:404 valid category but no reviews have been written", async () => {
             const { body } = await request(app)
                 .get("/api/reviews?category=children's+games")
@@ -274,14 +263,12 @@ describe('GET /api/reviews/:review_id/comments', () => {
         ]);
     });
     describe('Error Handling for GET /api/reviews/:review_id/comments', () => {
-
         test('status:400 bad request - invalid syntax for :review_id', async () => {
             const { body } = await request(app)
                 .get('/api/reviews/banana/comments')
                 .expect(400);
             expect(body.msg).toBe('Bad Request');
         });
-
         test('status:404 not found - review_id is valid but not comment has yet been written', async () => {
             const { body } = await request(app)
                 .get('/api/reviews/1/comments')
@@ -305,7 +292,6 @@ describe('POST /api/reviews/:review_id/comments', () => {
             created_at: expect.any(String)
         });
     });
-
     describe('Error Handling for POST /api/reviews/:review_id/comments', () => {
         test('status:400 bad request - invalid syntax for :review_id', async () => {
             const { body } = await request(app)
@@ -314,7 +300,6 @@ describe('POST /api/reviews/:review_id/comments', () => {
                 .expect(400);
             expect(body.msg).toBe('Bad Request');
         });
-
         test('status:400 bad request - username does not exist', async () => {
             const { body } = await request(app)
                 .post('/api/reviews/1/comments')
@@ -322,7 +307,6 @@ describe('POST /api/reviews/:review_id/comments', () => {
                 .expect(400);
             expect(body.msg).toBe('Bad Request: Username does not exist');
         });
-
         test('status:400 bad request - empty request body', async () => {
             const { body } = await request(app)
                 .post('/api/reviews/1/comments')
