@@ -1,7 +1,6 @@
 const db = require('../db/connection.js');
 const fs = require("fs/promises");
 
-
 exports.selectCategories = async () => {
     const { rows } = await db.query(`SELECT * FROM categories;`)
     return rows;
