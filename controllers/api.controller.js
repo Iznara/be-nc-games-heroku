@@ -1,7 +1,5 @@
-const { readSummary } = require("../models/models.js");
+const endpoints = require("../endpoints.json")
 
 exports.getSummary = (req, res, next) => {
-    readSummary().then(summary => {
-        res.status(200).send({ summary : summary })
-    }).catch(next)
+        res.status(200).send({ summary : endpoints }).catch(next)
 };
