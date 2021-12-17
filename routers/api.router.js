@@ -1,5 +1,5 @@
 const apiRouter = require('express').Router();
-const { getSummary } = require('../controllers/controller.js');
+const { getSummary } = require('../controllers/api.controller.js');
 const categoriesRouter = require('./categories.router.js');
 const commentsRouter = require('./comments.router.js');
 const reviewsRouter = require('./reviews.router.js');

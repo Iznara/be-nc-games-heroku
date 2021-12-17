@@ -7,7 +7,6 @@ exports.selectCategories = async () => {
 };
 
 exports.selectReviewById = async (id) => {
-    //--using CAST :: operator to convert a value of one datatype into another
     const queryStr = `
     SELECT reviews.*,
     COUNT(comment_id)::INT AS comment_count FROM reviews 
