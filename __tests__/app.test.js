@@ -40,18 +40,20 @@ describe('GET /api/reviews/:review_id', () => {
         const { body } = await request(app)
             .get('/api/reviews/2')
             .expect(200);
-        expect(body.review).toEqual({
-            review_id: 2,
-            comment_count: 3,
-            title: 'Jenga',
-            designer: 'Leslie Scott',
-            owner: 'philippaclaire9',
-            review_img_url: 'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
-            review_body: 'Fiddly fun for all the family',
-            category: 'dexterity',
-            created_at: '2021-01-18T10:01:41.251Z',
-            votes: 5
-        });
+        expect(body.review).toEqual(
+            expect.objectContaining({
+                review_id: 2,
+                comment_count: 3,
+                title: 'Jenga',
+                designer: 'Leslie Scott',
+                owner: 'philippaclaire9',
+                review_img_url: 'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+                review_body: 'Fiddly fun for all the family',
+                category: 'dexterity',
+                created_at: '2021-01-18T10:01:41.251Z',
+                votes: 5
+            })
+        );
     });
     describe('Error Handling for GET /api/reviews/:review_id', () => {
         test('status:400 bad request - invalid syntax for :review_id', async () => {
@@ -69,17 +71,19 @@ describe('PATCH /api/reviews/:review_id', () => {
             .patch(`/api/reviews/2`)
             .send({ "inc_votes": 1 })
             .expect(200);
-        expect(body.review).toEqual({
-            review_id: 2,
-            title: 'Jenga',
-            review_body: 'Fiddly fun for all the family',
-            designer: 'Leslie Scott',
-            review_img_url: 'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
-            category: 'dexterity',
-            owner: 'philippaclaire9',
-            created_at: '2021-01-18T10:01:41.251Z',
-            votes: 6
-        });
+        expect(body.review).toEqual(
+            expect.objectContaining({
+                review_id: 2,
+                title: 'Jenga',
+                review_body: 'Fiddly fun for all the family',
+                designer: 'Leslie Scott',
+                review_img_url: 'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+                category: 'dexterity',
+                owner: 'philippaclaire9',
+                created_at: '2021-01-18T10:01:41.251Z',
+                votes: 6
+            })
+        );
     });
     test('status:200 accepts a negative number of votes and returns the updated review', async () => {
         const { body } = await request(app)
@@ -235,32 +239,9 @@ describe('GET /api/reviews/:review_id/comments', () => {
         const { body } = await request(app)
             .get('/api/reviews/2/comments')
             .expect(200);
-        expect(body.comments).toEqual([
-            {
-                body: 'I loved this game too!',
-                votes: 16,
-                author: 'bainesface',
-                comment_id: 1,
-                created_at: '2017-11-22T12:43:33.389Z',
-                review_id: 2,
-            },
-            {
-                body: 'EPIC board game!',
-                votes: 16,
-                author: 'bainesface',
-                comment_id: 4,
-                created_at: '2017-11-22T12:36:03.389Z',
-                review_id: 2,
-            },
-            {
-                body: 'Now this is a story all about how, board games turned my life upside down',
-                votes: 13,
-                author: 'mallionaire',
-                comment_id: 5,
-                created_at: '2021-01-18T10:24:05.410Z',
-                review_id: 2,
-            },
-        ]);
+        const comArr = body.comments.every((comment) => comment.review_id === 2);
+        expect(body.comments).toHaveLength(3);
+        expect(comArr).toBe(true);
     });
     describe('Error Handling for GET /api/reviews/:review_id/comments', () => {
         test('status:400 bad request - invalid syntax for :review_id', async () => {
@@ -324,48 +305,6 @@ describe('DELETE /api/comments/:comment_id', () => {
             .expect(204);
         const { rows } = await db.query('SELECT * FROM comments');
         expect(rows.length).toBe(5);
-        expect(rows).toEqual([
-            {
-                body: 'I loved this game too!',
-                votes: 16,
-                author: 'bainesface',
-                review_id: 2,
-                created_at: new Date(1511354613389),
-                comment_id: 1
-            },
-            {
-                body: 'My dog loved this game too!',
-                votes: 13,
-                author: 'mallionaire',
-                review_id: 3,
-                created_at: new Date(1610964545410),
-                comment_id: 2
-            },
-            {
-                body: 'EPIC board game!',
-                votes: 16,
-                author: 'bainesface',
-                review_id: 2,
-                created_at: new Date(1511354163389),
-                comment_id: 4
-            },
-            {
-                body: 'Now this is a story all about how, board games turned my life upside down',
-                votes: 13,
-                author: 'mallionaire',
-                review_id: 2,
-                created_at: new Date(1610965445410),
-                comment_id: 5
-            },
-            {
-                body: 'Not sure about dogs, but my cat likes to get involved with board games, the boxes are their particular favourite',
-                votes: 10,
-                author: 'philippaclaire9',
-                review_id: 3,
-                created_at: new Date(1616874588110),
-                comment_id: 6
-            }
-        ]);
     });
     describe('Error Handling for DELETE /api/comments/:comment_id', () => {
         test('status:400 invalid syntax for comment_id', async () => {
@@ -379,46 +318,10 @@ describe('DELETE /api/comments/:comment_id', () => {
 
 describe('GET /api', () => {
     test('status:200 responds with JSON describing all the available endpoints on your API', async () => {
+        const endPointsData = require("../endpoints.json")
         const { body } = await request(app)
             .get('/api')
             .expect(200);
-        expect(body).toEqual(
-            {
-                summary: {
-                    'GET /api': {
-                        description: 'serves up a json representation of all the available endpoints of the api'
-                    },
-                    'GET /api/categories': {
-                        description: 'serves an array of all categories',
-                        queries: [],
-                        exampleResponse: {
-                            categories: [
-                                {
-                                    description: "Players attempt to uncover each other's hidden role",
-                                    slug: "Social deduction"
-                                }
-                            ]
-                        }
-                    },
-                    'GET /api/reviews': {
-                        description: 'serves an array of all reviews',
-                        queries: ["category", "sort_by", "order"],
-                        exampleResponse: {
-                            reviews: [
-                                {
-                                    title: "One Night Ultimate Werewolf",
-                                    designer: "Akihisa Okui",
-                                    owner: "happyamy2016",
-                                    review_img_url: "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-                                    category: "hidden-roles",
-                                    created_at: 1610964101251,
-                                    votes: 5
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        );
+        expect(body.summary).toEqual(endPointsData);
     });
 });
