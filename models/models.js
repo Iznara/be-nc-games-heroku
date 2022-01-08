@@ -14,17 +14,17 @@ exports.selectReviewById = async (id) => {
     WHERE reviews.review_id = $1 
     GROUP BY reviews.review_id;`
     const { rows } = await db.query(queryStr, [id])
-    return rows[0];
+    return rows.length !== 0 ?
+        rows[0] : Promise.reject({ status: '404', msg: 'Review Not Found' })
 };
 
-exports.updateReview = async (id, vote) => {
+exports.updateReview = async (id, vote = 0) => {
     const queryStr = `
     UPDATE reviews SET votes = votes + $2 
     WHERE review_id = $1 RETURNING *`
+    
     const review = await db.query(queryStr, [id, vote]);
-    return vote === undefined ?
-        Promise.reject({ status: '400', msg: 'Bad Request' })
-        : review.rows[0]
+    return review.rows[0]
 };
 
 exports.selectReviews = async (sort = 'created_at', order = 'desc', category) => {
@@ -46,8 +46,7 @@ exports.selectReviews = async (sort = 'created_at', order = 'desc', category) =>
     if (rows.length === 0 && category !== undefined) {
         const queryResult = await db.query(`SELECT * FROM categories WHERE slug = $1`, [category])
         return queryResult.rows.length === 0
-            ? Promise.reject({ status: '404', msg: 'Category does not exist in the database' })
-            : Promise.reject({ status: '404', msg: 'No reviews found for this category' })
+            ? Promise.reject({ status: '404', msg: 'Category does not exist in the database' }) : [];
     } else {
         return rows;
     }
@@ -57,8 +56,9 @@ exports.selectCommentsByReviewId = async (id) => {
     const queryStr = `
     SELECT * FROM comments WHERE review_id = $1;`
     const { rows } = await db.query(queryStr, [id])
-    return rows.length !== 0 ?
-        rows : Promise.reject({ status: '404', msg: 'No comments found for this review' })
+    const reviewResult = await db.query(`SELECT * FROM reviews WHERE review_id = $1`, [id]);
+    return reviewResult.rows.length !== 0 ?
+        rows : Promise.reject({ status: '404', msg: 'The review you are attempting to view does not exist' })
 };
 
 exports.insertComment = async (id, user, body) => {
@@ -68,6 +68,7 @@ exports.insertComment = async (id, user, body) => {
     VALUES ($1, $2, $3)
     RETURNING *;`
     const { rows } = await db.query(queryStr, [body, user, id])
+
     return user === undefined || body === undefined ?
         Promise.reject({ status: '400', msg: 'Bad Request' })
         : rows[0];
@@ -77,5 +78,6 @@ exports.removeComment = async (id) => {
     const queryStr = `
     DELETE FROM comments WHERE comment_id = $1 RETURNING *;`
     const { rows } = await db.query(queryStr, [id])
-    return rows;
+    return rows.length !== 0 ?
+        rows : Promise.reject({ status: '404', msg: 'The comment you are attempting to delete does not exist' })
 };

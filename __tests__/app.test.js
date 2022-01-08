@@ -62,6 +62,12 @@ describe('GET /api/reviews/:review_id', () => {
                 .expect(400);
             expect(body.msg).toBe('Bad Request');
         });
+        test('status:404 not found - invalid review_id', async () => {
+            const { body } = await request(app)
+                .get('/api/reviews/1000')
+                .expect(404);
+            expect(body.msg).toBe('Review Not Found');
+        });
     });
 });
 
@@ -102,17 +108,29 @@ describe('PATCH /api/reviews/:review_id', () => {
             votes: -95
         });
     });
+    test(`status:200 sends unchanged review if request body is empty`, async () => {
+        const { body } = await request(app)
+        .patch(`/api/reviews/2`)
+        .send({})
+        .expect(200);
+    expect(body.review).toEqual(
+        expect.objectContaining({
+            review_id: 2,
+            title: 'Jenga',
+            review_body: 'Fiddly fun for all the family',
+            designer: 'Leslie Scott',
+            review_img_url: 'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+            category: 'dexterity',
+            owner: 'philippaclaire9',
+            created_at: '2021-01-18T10:01:41.251Z',
+            votes: 5
+        })
+    );
+    });
     describe('Error Handling for PATCH /api/reviews/:review_id', () => {
         test('status:400 bad request - invalid syntax for :review_id', async () => {
             const { body } = await request(app)
                 .patch('/api/reviews/notanumber!')
-                .expect(400);
-            expect(body.msg).toBe('Bad Request');
-        });
-        test(`status:400 bad request - empty request body`, async () => {
-            const { body } = await request(app)
-                .patch(`/api/reviews/2`)
-                .send({})
                 .expect(400);
             expect(body.msg).toBe('Bad Request');
         });
@@ -200,6 +218,14 @@ describe('GET /api/reviews', () => {
                 }));
         });
     });
+    test("status 200: returns an empty array for a valid category that has no reviews", () => {
+        return request(app)
+        .get("/api/reviews?category=children's+games")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.reviews).toEqual([]);
+        });
+    });
     describe('Error Handling for GET /api/reviews', () => {
         test("status:400 invalid query", async () => {
             const { body } = await request(app)
@@ -225,12 +251,12 @@ describe('GET /api/reviews', () => {
                 .expect(404);
             expect(body.msg).toBe('Category does not exist in the database');
         });
-        test("status:404 valid category but no reviews have been written", async () => {
-            const { body } = await request(app)
-                .get("/api/reviews?category=children's+games")
-                .expect(404);
-            expect(body.msg).toBe('No reviews found for this category');
-        });
+        // test("status:404 valid category but no reviews have been written", async () => {
+        //     const { body } = await request(app)
+        //         .get("/api/reviews?category=children's+games")
+        //         .expect(404);
+        //     expect(body.msg).toBe('No reviews found for this category');
+        // });
     });
 });
 
@@ -243,6 +269,14 @@ describe('GET /api/reviews/:review_id/comments', () => {
         expect(body.comments).toHaveLength(3);
         expect(comArr).toBe(true);
     });
+    test("status 200: returns an empty array for a review with no comments", () => {
+        return request(app)
+        .get("/api/reviews/1/comments")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comments).toEqual([]);
+        });
+	});
     describe('Error Handling for GET /api/reviews/:review_id/comments', () => {
         test('status:400 bad request - invalid syntax for :review_id', async () => {
             const { body } = await request(app)
@@ -250,12 +284,16 @@ describe('GET /api/reviews/:review_id/comments', () => {
                 .expect(400);
             expect(body.msg).toBe('Bad Request');
         });
-        test('status:404 not found - review_id is valid but not comment has yet been written', async () => {
-            const { body } = await request(app)
-                .get('/api/reviews/1/comments')
-                .expect(404);
-            expect(body.msg).toBe('No comments found for this review');
-        });
+        test("status 404 valid reviw_id but does not exist", () => {
+            return request(app)
+              .get("/api/reviews/1000/comments")
+              .expect(404)
+              .then(({ body }) => {
+                expect(body.msg).toBe("The review you are attempting to view does not exist");
+              });
+          });
+
+        
     });
 });
 
@@ -281,13 +319,6 @@ describe('POST /api/reviews/:review_id/comments', () => {
                 .expect(400);
             expect(body.msg).toBe('Bad Request');
         });
-        test('status:400 bad request - username does not exist', async () => {
-            const { body } = await request(app)
-                .post('/api/reviews/1/comments')
-                .send({ "username": "ryan", "body": "I also like turtles!" })
-                .expect(400);
-            expect(body.msg).toBe('Bad Request: Username does not exist');
-        });
         test('status:400 bad request - empty request body', async () => {
             const { body } = await request(app)
                 .post('/api/reviews/1/comments')
@@ -295,6 +326,24 @@ describe('POST /api/reviews/:review_id/comments', () => {
                 .expect(400);
             expect(body.msg).toBe('Bad Request: NULL values not authorised');
         });
+        test("status:422 unprocessable entity - Valid username but does not exist", () => {
+            return request(app)
+              .post("/api/reviews/1/comments")
+              .send({ "username": "ryan", "body": "I also like turtles!" })
+              .expect(422)
+              .then(({ body }) => {
+                expect(body.msg).toBe("Bad Request: Data does not exist");
+              });
+          });
+          test("status:422 unprocessable entity - Valid review_id but does not exist", () => {
+            return request(app)
+              .post("/api/reviews/1000/comments")
+              .send({ "username": "bainesface", "body": "I don't like turtles!" })
+              .expect(422)
+              .then(({ body }) => {
+                expect(body.msg).toBe("Bad Request: Data does not exist");
+              });
+          });
     });
 });
 
@@ -313,11 +362,17 @@ describe('DELETE /api/comments/:comment_id', () => {
                 .expect(400);
             expect(body.msg).toBe('Bad Request');
         });
+        test('status:404 valid comment_id but does not exist', async () => {
+            const { body } = await request(app)
+                .delete('/api/comments/1000')
+                .expect(404);
+            expect(body.msg).toBe('The comment you are attempting to delete does not exist');
+        });
     });
 });
 
 describe('GET /api', () => {
-    test('status:200 responds with JSON describing all the available endpoints on your API', async () => {
+    test('status:200 responds with JSON describing all the available endpoints on the API', async () => {
         const endPointsData = require("../endpoints.json")
         const { body } = await request(app)
             .get('/api')
