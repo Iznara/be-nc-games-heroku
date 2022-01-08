@@ -1,4 +1,4 @@
-const { selectCommentsByReviewId, insertComment, removeComment } = require("../models/models");
+const { selectCommentsByReviewId, insertComment, removeComment } = require("../models/comments.models");
 
 
 exports.getCommentsByReviewId = (req, res, next) => {
