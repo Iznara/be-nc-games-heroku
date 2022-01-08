@@ -1,7 +1,7 @@
 # **Iznara Game Reviews API**
 
 ## **About**
-This project is an API for the purpose of accessing application data programmatically. The intention here is to mimics the building of a real world backend service (such as reddit) which provides information to the front end architecture.
+This project is an API for the purpose of accessing application data programmatically. The intention here is to mimic the building of a real world backend service (such as reddit) which provides information to the front end architecture.
 
 The database currently contains the following information:
 - **Categories:** 
