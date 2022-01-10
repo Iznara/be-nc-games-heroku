@@ -29,3 +29,11 @@ exports.removeComment = async (id) => {
     return rows.length !== 0 ?
         rows : Promise.reject({ status: '404', msg: 'The comment you are attempting to delete does not exist' })
 };
+
+exports.updateComment = async (id, vote = 0) => {
+    const queryStr = `
+    UPDATE comments SET votes = votes + $2 
+    WHERE comment_id = $1 RETURNING *`
+    const comment = await db.query(queryStr, [id, vote]);
+    return comment.rows[0]
+};
