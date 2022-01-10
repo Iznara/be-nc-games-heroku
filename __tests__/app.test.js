@@ -218,13 +218,11 @@ describe('GET /api/reviews', () => {
                 }));
         });
     });
-    test("status 200: returns an empty array for a valid category that has no reviews", () => {
-        return request(app)
+    test("status 200: returns an empty array for a valid category that has no reviews", async () => {
+        const { body } = await request(app)
             .get("/api/reviews?category=children's+games")
-            .expect(200)
-            .then(({ body }) => {
-                expect(body.reviews).toEqual([]);
-            });
+            .expect(200);
+        expect(body.reviews).toEqual([]);
     });
     describe('Error Handling for GET /api/reviews', () => {
         test("status:400 invalid query", async () => {
@@ -269,13 +267,11 @@ describe('GET /api/reviews/:review_id/comments', () => {
         expect(body.comments).toHaveLength(3);
         expect(comArr).toBe(true);
     });
-    test("status 200: returns an empty array for a review with no comments", () => {
-        return request(app)
+    test("status 200: returns an empty array for a review with no comments", async () => {
+        const { body } = await request(app)
             .get("/api/reviews/1/comments")
-            .expect(200)
-            .then(({ body }) => {
-                expect(body.comments).toEqual([]);
-            });
+            .expect(200);
+        expect(body.comments).toEqual([]);
     });
     describe('Error Handling for GET /api/reviews/:review_id/comments', () => {
         test('status:400 bad request - invalid syntax for :review_id', async () => {
@@ -284,13 +280,11 @@ describe('GET /api/reviews/:review_id/comments', () => {
                 .expect(400);
             expect(body.msg).toBe('Bad Request');
         });
-        test("status 404 valid reviw_id but does not exist", () => {
-            return request(app)
+        test("status 404 valid reviw_id but does not exist", async () => {
+            const { body } = await request(app)
                 .get("/api/reviews/1000/comments")
-                .expect(404)
-                .then(({ body }) => {
-                    expect(body.msg).toBe("The review you are attempting to view does not exist");
-                });
+                .expect(404);
+            expect(body.msg).toBe("The review you are attempting to view does not exist");
         });
 
 
@@ -326,23 +320,19 @@ describe('POST /api/reviews/:review_id/comments', () => {
                 .expect(400);
             expect(body.msg).toBe('Bad Request: NULL values not authorised');
         });
-        test("status:422 unprocessable entity - Valid username but does not exist", () => {
-            return request(app)
+        test("status:422 unprocessable entity - Valid username but does not exist", async () => {
+            const { body } = await request(app)
                 .post("/api/reviews/1/comments")
                 .send({ "username": "ryan", "body": "I also like turtles!" })
-                .expect(422)
-                .then(({ body }) => {
-                    expect(body.msg).toBe("Bad Request: Data does not exist");
-                });
+                .expect(422);
+            expect(body.msg).toBe("Bad Request: Data does not exist");
         });
-        test("status:422 unprocessable entity - Valid review_id but does not exist", () => {
-            return request(app)
+        test("status:422 unprocessable entity - Valid review_id but does not exist", async () => {
+            const { body } = await request(app)
                 .post("/api/reviews/1000/comments")
                 .send({ "username": "bainesface", "body": "I don't like turtles!" })
-                .expect(422)
-                .then(({ body }) => {
-                    expect(body.msg).toBe("Bad Request: Data does not exist");
-                });
+                .expect(422);
+            expect(body.msg).toBe("Bad Request: Data does not exist");
         });
     });
 });
@@ -391,8 +381,31 @@ describe("GET /api/users", () => {
         body.users.forEach((user) => {
             expect(user).toEqual(
                 expect.objectContaining({
-                    username: expect.any(String),
+                    username: expect.any(String)
                 }));
+        });
+    });
+});
+
+describe("GET /api/users/:username", () => {
+    test("status: 200 responds with an array of objects with a username property", async () => {
+        const { body } = await request(app)
+            .get('/api/users/mallionaire')
+            .expect(200);
+        expect(body.user).toEqual([
+            {
+                username: 'mallionaire',
+                name: 'haz',
+                avatar_url:
+                    'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg'
+            }]);
+    });
+    describe('Error Handling for GET /api/users/:username', () => {
+        test('status:404 valid username but does not exist', async () => {
+            const { body } = await request(app)
+                .get("/api/users/jeff")
+                .expect(404);
+            expect(body.msg).toBe("User Not Found");
         });
     });
 });
