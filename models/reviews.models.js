@@ -8,6 +8,7 @@ exports.selectReviewById = async (id) => {
     WHERE reviews.review_id = $1 
     GROUP BY reviews.review_id;`
     const { rows } = await db.query(queryStr, [id])
+
     return rows.length !== 0 ?
         rows[0] : Promise.reject({ status: '404', msg: 'Review Not Found' })
 };
@@ -16,7 +17,7 @@ exports.updateReview = async (id, vote = 0) => {
     const queryStr = `
     UPDATE reviews SET votes = votes + $2 
     WHERE review_id = $1 RETURNING *`
-    
+
     const review = await db.query(queryStr, [id, vote]);
     return review.rows[0]
 };
@@ -44,4 +45,21 @@ exports.selectReviews = async (sort = 'created_at', order = 'desc', category) =>
     } else {
         return rows;
     }
+};
+
+exports.insertReview = async (owner, title, review_body, designer, category) => {
+    const queryStr = `
+    INSERT INTO reviews
+    (owner, title, review_body, designer, category)
+    VALUES ($1, $2, $3, $4, $5) RETURNING *;`;
+    const { rows } = await db.query(queryStr, [owner, title, review_body, designer, category]);
+    return rows[0];
+};
+
+exports.removeReview = async (id) => {
+    const queryStr = `
+    DELETE FROM reviews WHERE review_id = $1 RETURNING *;`
+    const { rows } = await db.query(queryStr, [id])
+    return rows.length !== 0 ?
+        rows : Promise.reject({ status: '404', msg: 'The review you are attempting to delete does not exist' })
 };

@@ -424,7 +424,7 @@ describe('PATCH /api/comments/:comment_id', () => {
                 votes: 17,
                 created_at: "2017-11-22T12:43:33.389Z",
                 body: 'I loved this game too!'
-              })
+            })
         );
     });
     test('status:200 accepts a negative number of votes and returns the updated comment', async () => {
@@ -471,5 +471,68 @@ describe('PATCH /api/comments/:comment_id', () => {
                 .expect(400);
             expect(body.msg).toBe('Bad Request');
         })
+    });
+});
+
+describe("POST /api/reviews", () => {
+    test("status:201 responds with a newly added review", async () => {
+        const { body } = await request(app)
+            .post("/api/reviews")
+            .send({
+                owner: "bainesface",
+                title: "This is the title of the review",
+                review_body: "Farmyard fun!",
+                designer: "Akihisa Okui",
+                category: "dexterity",
+            }).expect(201)
+        expect(body.review).toMatchObject({
+            owner: "bainesface",
+            title: "This is the title of the review",
+            review_body: "Farmyard fun!",
+            designer: "Akihisa Okui",
+            category: "dexterity",
+            created_at: expect.any(String),
+            review_id: expect.any(Number),
+            votes: 0,
+        });
+    });
+});
+
+describe("POST /api/categories", () => {
+    test("status:201 responds with a newly added category", async () => {
+        const { body } = await request(app)
+            .post("/api/categories")
+            .send({
+                slug: "New Category",
+                description: "Description of category",
+            }).expect(201)
+        expect(body.category).toMatchObject({
+            slug: "New Category",
+            description: "Description of category",
+        });
+    });
+});
+
+describe('DELETE /api/reviews/:review_id', () => {
+    test('status:204 returns with correct status and no content', async () => {
+        await request(app)
+            .delete('/api/reviews/3')
+            .expect(204);
+        const { rows } = await db.query('SELECT * FROM reviews');
+        expect(rows.length).toBe(12);
+    });
+    describe('Error Handling for DELETE /api/reviews/:review_id', () => {
+        test('status:400 invalid syntax for review_id', async () => {
+            const { body } = await request(app)
+                .delete('/api/reviews/notanumber')
+                .expect(400);
+            expect(body.msg).toBe('Bad Request');
+        });
+        test('status:404 valid review_id but does not exist', async () => {
+            const { body } = await request(app)
+                .delete('/api/reviews/1000')
+                .expect(404);
+            expect(body.msg).toBe('The review you are attempting to delete does not exist');
+        });
     });
 });

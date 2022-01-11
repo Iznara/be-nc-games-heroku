@@ -1,14 +1,16 @@
 const { getCommentsByReviewId, postComment } = require('../controllers/comments.controller');
-const { getReviewById, patchReview, getReviews } = require('../controllers/reviews.controller');
+const { getReviewById, patchReview, getReviews, postReview, deleteReview } = require('../controllers/reviews.controller');
 
 const reviewsRouter = require('express').Router();
 
 reviewsRouter.route('/')
-.get(getReviews);
+.get(getReviews)
+.post(postReview);
 
 reviewsRouter.route('/:review_id')
 .get(getReviewById)
-.patch(patchReview);
+.patch(patchReview)
+.delete(deleteReview);
 
 reviewsRouter.route('/:review_id/comments')
 .get(getCommentsByReviewId)
