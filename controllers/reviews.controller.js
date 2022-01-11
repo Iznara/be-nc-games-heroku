@@ -16,11 +16,11 @@ exports.patchReview = (req, res, next) => {
 };
 
 exports.getReviews = (req, res, next) => {
-    const { sort_by, order, category } = req.query;
-    const queries = ['sort_by', 'order', 'category'];
+    const { sort_by, order, category, page, limit } = req.query;
+    const queries = ['sort_by', 'order', 'category', 'page', 'limit'];
     const keys = Object.keys(req.query);
     return keys.every(key => queries.includes(key)) ?
-        selectReviews(sort_by, order, category).then(reviews => {
+        selectReviews(sort_by, order, category, page, limit).then(reviews => {
             res.status(200).send({ reviews: reviews });
         }).catch(next)
         : Promise.reject({ status: '400', msg: 'Invalid Query' }).catch(next);

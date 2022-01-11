@@ -150,7 +150,7 @@ describe('GET /api/reviews', () => {
             .get('/api/reviews')
             .expect(200);
         expect(body.reviews).toBeInstanceOf(Array);
-        expect(body.reviews).toHaveLength(13);
+        expect(body.reviews).toHaveLength(10);
         expect(body.reviews).toBeSortedBy('created_at', { descending: true });
         body.reviews.forEach((review) => {
             expect(review).toEqual(
@@ -174,7 +174,7 @@ describe('GET /api/reviews', () => {
             .get('/api/reviews?sort_by=review_id&&order=asc')
             .expect(200);
         expect(body.reviews).toBeInstanceOf(Array);
-        expect(body.reviews).toHaveLength(13);
+        expect(body.reviews).toHaveLength(10);
         expect(body.reviews).toBeSortedBy('review_id', { descending: false });
         body.reviews.forEach((review) => {
             expect(review).toEqual(
@@ -199,7 +199,7 @@ describe('GET /api/reviews', () => {
             .get('/api/reviews?category=social+deduction&&sort_by=votes&&order=desc')
             .expect(200);
         expect(body.reviews).toBeInstanceOf(Array);
-        expect(body.reviews).toHaveLength(11);
+        expect(body.reviews).toHaveLength(10);
         expect(body.reviews).toBeSortedBy('votes', { descending: true });
         body.reviews.forEach((review) => {
             expect(review).toEqual(
@@ -218,12 +218,19 @@ describe('GET /api/reviews', () => {
                 }));
         });
     });
-    test("status 200: returns an empty array for a valid category that has no reviews", async () => {
+    test("status:200 returns an empty array for a valid category that has no reviews", async () => {
         const { body } = await request(app)
             .get("/api/reviews?category=children's+games")
             .expect(200);
         expect(body.reviews).toEqual([]);
     });
+    test("status:200 pagination and limit query", async () => {
+        const { body } = await request(app)
+        .get("/api/reviews?page=2&limit=3")
+        .expect(200);
+        expect(body.reviews).toBeInstanceOf(Array);
+        expect(body.reviews).toHaveLength(3);
+      });
     describe('Error Handling for GET /api/reviews', () => {
         test("status:400 invalid query", async () => {
             const { body } = await request(app)
@@ -267,11 +274,19 @@ describe('GET /api/reviews/:review_id/comments', () => {
         expect(body.comments).toHaveLength(3);
         expect(comArr).toBe(true);
     });
-    test("status 200: returns an empty array for a review with no comments", async () => {
+    test("status:200 returns an empty array for a review with no comments", async () => {
         const { body } = await request(app)
             .get("/api/reviews/1/comments")
             .expect(200);
         expect(body.comments).toEqual([]);
+    });
+    test('status:200 pagination and limit query', async () => {
+        const { body } = await request(app)
+            .get("/api/reviews/2/comments?page=2&limit=1")
+            .expect(200);
+        expect(body.comments).toBeInstanceOf(Array);
+        expect(body.comments).toHaveLength(1);
+        expect(body.comments[0].body).toBe("EPIC board game!");
     });
     describe('Error Handling for GET /api/reviews/:review_id/comments', () => {
         test('status:400 bad request - invalid syntax for :review_id', async () => {
@@ -280,7 +295,7 @@ describe('GET /api/reviews/:review_id/comments', () => {
                 .expect(400);
             expect(body.msg).toBe('Bad Request');
         });
-        test("status 404 valid reviw_id but does not exist", async () => {
+        test("status:404 valid reviw_id but does not exist", async () => {
             const { body } = await request(app)
                 .get("/api/reviews/1000/comments")
                 .expect(404);
@@ -362,7 +377,7 @@ describe('DELETE /api/comments/:comment_id', () => {
 });
 
 describe('GET /api', () => {
-    test('status: 200 responds with JSON describing all the available endpoints on the API', async () => {
+    test('status:200 responds with JSON describing all the available endpoints on the API', async () => {
         const endPointsData = require("../endpoints.json")
         const { body } = await request(app)
             .get('/api')
@@ -372,7 +387,7 @@ describe('GET /api', () => {
 });
 
 describe("GET /api/users", () => {
-    test("status: 200 responds with an array of objects with a username property", async () => {
+    test("status:200 responds with an array of objects with a username property", async () => {
         const { body } = await request(app)
             .get('/api/users')
             .expect(200);
@@ -388,7 +403,7 @@ describe("GET /api/users", () => {
 });
 
 describe("GET /api/users/:username", () => {
-    test("status: 200 responds with an array of objects with a username property", async () => {
+    test("status:200 responds with an array of objects with a username property", async () => {
         const { body } = await request(app)
             .get('/api/users/mallionaire')
             .expect(200);

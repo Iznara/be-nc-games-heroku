@@ -22,7 +22,7 @@ exports.updateReview = async (id, vote = 0) => {
     return review.rows[0]
 };
 
-exports.selectReviews = async (sort = 'created_at', order = 'desc', category) => {
+exports.selectReviews = async (sort = 'created_at', order = 'desc', category, page = 1, limit = 10) => {
     let queryStr = `
     SELECT reviews.*,
     COUNT(comment_id)::INT AS comment_count, 
@@ -35,14 +35,17 @@ exports.selectReviews = async (sort = 'created_at', order = 'desc', category) =>
     }
     queryStr += `GROUP BY reviews.review_id `
     queryStr += `ORDER BY ${sort} ${order} `
+    queryStr += `LIMIT ${limit} OFFSET((${page} - 1) * ${limit}); `
 
     const { rows } = await db.query(queryStr, queryArr)
 
     if (rows.length === 0 && category !== undefined) {
-        const queryResult = await db.query(`SELECT * FROM categories WHERE slug = $1`, [category])
+        const queryResult = await db.query(`
+        SELECT * FROM categories WHERE slug = $1 `, [category])
         return queryResult.rows.length === 0
             ? Promise.reject({ status: '404', msg: 'Category does not exist in the database' }) : [];
     } else {
+        
         return rows;
     }
 };

@@ -1,9 +1,10 @@
 const db = require('../db/connection.js');
 
-exports.selectCommentsByReviewId = async (id) => {
+exports.selectCommentsByReviewId = async (id, page = 1, limit = 10) => {
     const queryStr = `
-    SELECT * FROM comments WHERE review_id = $1;`
-    const { rows } = await db.query(queryStr, [id])
+    SELECT * FROM comments WHERE review_id = $1
+    LIMIT $3 OFFSET(($2 - 1) * $3);`
+    const { rows } = await db.query(queryStr, [id, page, limit])
     const reviewResult = await db.query(`SELECT * FROM reviews WHERE review_id = $1`, [id]);
     return reviewResult.rows.length !== 0 ?
         rows : Promise.reject({ status: '404', msg: 'The review you are attempting to view does not exist' })

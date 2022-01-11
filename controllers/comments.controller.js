@@ -3,7 +3,10 @@ const { selectCommentsByReviewId, insertComment, removeComment, updateComment } 
 
 exports.getCommentsByReviewId = (req, res, next) => {
     const { review_id } = req.params;
-    selectCommentsByReviewId(review_id).then(comments => {
+    const queryParams = req.query;
+    const page = queryParams['page'];
+    const limit = queryParams['limit'];
+    selectCommentsByReviewId(review_id, page, limit).then(comments => {
         res.status(200).send({ comments: comments });
     }).catch(next)
 };
