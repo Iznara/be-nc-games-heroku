@@ -1,34 +1,203 @@
 {
   "GET /api": {
-    "description": "serves up a json representation of all the available endpoints of the api"
+    "description": "Serves up a json representation of all the available endpoints of the api"
   },
   "GET /api/categories": {
-    "description": "serves an array of all categories",
-    "queries": [],
+    "description": "Serves an array of all categories",
     "exampleResponse": {
       "categories": [
         {
-          "description": "Players attempt to uncover each other's hidden role",
-          "slug": "Social deduction"
+          "slug": "strategy",
+          "description": "Strategy-focused board games that prioritise limited-randomness"
+        },
+        {
+          "slug": "hidden-roles",
+          "description": "One or more players around the table have a secret, and the rest of you need to figure out who! Players attempt to uncover each other's hidden role"
         }
       ]
     }
   },
+  "GET /api/reviews/:review_id": {
+    "description": "Serves an object of single review",
+    "exampleResponse": {
+      "review": {
+        "review_id": 4,
+        "title": "One Night Ultimate Werewolf",
+        "review_body": "We couldn't find the werewolf!",
+        "designer": "Akihisa Okui",
+        "review_img_url": "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+        "votes": 6,
+        "category": "hidden-roles",
+        "owner": "happyamy2016",
+        "created_at": "2021-01-18T10:01:41.251Z",
+        "comment_count": 4
+      }
+    }
+  },
   "GET /api/reviews": {
-    "description": "serves an array of all reviews",
-    "queries": ["category", "sort_by", "order"],
+    "description": "Serves an array of all reviews",
+    "queries": [
+      "category",
+      "sort_by",
+      "order"
+    ],
     "exampleResponse": {
       "reviews": [
         {
-          "title": "One Night Ultimate Werewolf",
-          "designer": "Akihisa Okui",
-          "owner": "happyamy2016",
-          "review_img_url": "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-          "category": "hidden-roles",
-          "created_at": 1610964101251,
-          "votes": 5
+          "review_id": 16,
+          "title": "Ticket To Ride",
+          "review_body": "Choo-chooing onto game tables and zooming its way to becoming a modern classic. Ticket To Ride is rich with trains, tickets and tactics. Players gather train cards to enable then to build routes across a North American map, joining big cities and trying not to get blocked by their opponent ",
+          "designer": "Alan R. Moon",
+          "review_img_url": "https://images.pexels.com/photos/4691567/pexels-photo-4691567.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+          "votes": 2,
+          "category": "deck-building",
+          "owner": "weegembump",
+          "created_at": "2021-01-22T11:05:05.936Z",
+          "comment_count": 6,
+          "total_count": 21
         }
       ]
     }
+  },
+  "GET /api/reviews/:review_id/comments": {
+    "description": "Serves an array of all comments for the provided review",
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 13,
+          "author": "weegembump",
+          "review_id": 6,
+          "votes": 9,
+          "created_at": "1975-02-15T08:22:39.110Z",
+          "body": "Sint elit ut ex aliquip laboris in elit Lorem elit incididunt cillum fugiat."
+        },
+        {
+          "comment_id": 9,
+          "author": "weegembump",
+          "review_id": 6,
+          "votes": 3,
+          "created_at": "2021-03-27T14:15:36.110Z",
+          "body": "Consequat nisi dolor nulla esse sunt eu ipsum laborum deserunt duis."
+        }
+      ]
+    }
+  },
+  "GET /api/users": {
+    "description": "Serves an array of all users",
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "tickle122"
+        },
+        {
+          "username": "grumpy19"
+        }
+      ]
+    }
+  },
+  "GET /api/users/:username": {
+    "description": "Serves a single user object by the provided username",
+    "exampleResponse": {
+      "user": [
+        {
+          "username": "tickle122",
+          "avatar_url": "https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953",
+          "name": "Tom Tickle"
+        }
+      ]
+    }
+  },
+  "PATCH /api/reviews/:review_id": {
+    "description": "Serves an updated a review object by the number of votes provided in the request body",
+    "exampleRequest": {
+      "inc_votes": 1
+    },
+    "exampleResponse": {
+      "review": {
+        "review_id": 4,
+        "title": "One Night Ultimate Werewolf",
+        "review_body": "We couldn't find the werewolf!",
+        "designer": "Akihisa Okui",
+        "review_img_url": "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+        "votes": 7,
+        "category": "hidden-roles",
+        "owner": "happyamy2016",
+        "created_at": "2021-01-18T10:01:41.251Z",
+        "comment_count": 4
+      }
+    }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "Serves an updated a comment object by the number of votes provided in the request body",
+    "exampleRequest": {
+      "inc_votes": 1
+    },
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 2,
+        "author": "tickle122",
+        "review_id": 4,
+        "votes": 5,
+        "created_at": "2021-01-18T10:09:05.410Z",
+        "body": "My dog loved this game too!"
+      }
+    }
+  },
+  "POST /api/reviews": {
+    "description": "Creates a new review",
+    "exampleRequest": {
+      "owner": "happyamy2016",
+      "title": "Second Night Ultimate Werewolf",
+      "review_body": "We fond the werewolf!",
+      "designer": "Akihisa Okui",
+      "category": "hidden-roles"
+    },
+    "exampleResponse": {
+      "review": {
+        "review_id": 38,
+        "votes": 0,
+        "comment_count": 0,
+        "created_at": "2021-02-31T10:51:44.211Z",
+        "owner": "happyamy2016",
+        "title": "Second Night Ultimate Werewolf",
+        "review_body": "We fond the werewolf!",
+        "designer": "Akihisa Okui",
+        "category": "hidden-roles"
+      }
+    }
+  },
+  "POST /api/categories": {
+    "description": "Creates a new category",
+    "exampleRequest": {
+      "slug": "engine-building",
+      "description": "Games where players construct unique points-gaining engines main element of the gameplay"
+    },
+    "exampleResponse": {
+      "slug": "engine-building",
+      "description": "Games where players construct unique points-gaining engines main element of the gameplay"
+    }
+  },
+  "POST /api/reviews/:review_id/comments": {
+    "description": "Creates a new comment for the provided review",
+    "exampleRequest": {
+      "username": "tickle122",
+      "body": "test"
+    },
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 90,
+        "author": "tickle122",
+        "review_id": 14,
+        "votes": 0,
+        "created_at": "2021-12-14T12:11:24.212Z",
+        "body": "test"
+      }
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "Deletes a comment by the provided comment_id and responds with status code 204: No Content"
+  },
+  "DELETE /api/reviews/:review_id": {
+    "description": "Deletes a review by the provided review_id and responds with status code 204: No Content"
   }
 }
