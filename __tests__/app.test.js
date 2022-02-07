@@ -500,6 +500,7 @@ describe("POST /api/reviews", () => {
                 designer: "Akihisa Okui",
                 category: "dexterity",
             }).expect(201)
+            console.log(body.review);
         expect(body.review).toMatchObject({
             owner: "bainesface",
             title: "This is the title of the review",
